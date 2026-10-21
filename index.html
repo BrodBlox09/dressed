@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<meta name="theme-color" content="#223B2F">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-title" content="Dressed">
+	<title>Dressed</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="stylesheet"
+		href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Instrument+Sans:wght@400;600&display=swap">
+	<style>
+		:root {
+			--forest: #223B2F;
+			--wine: #6E2233;
+			--bark: #5B4130;
+			--oat: #E8E1D3;
+			--paper: #F6F2E9;
+			--ink: #241C17;
+			--line: #d6cdbb
+		}
+
+		* {
+			box-sizing: border-box
+		}
+
+		img {
+			max-width: 100%
+		}
+
+		body {
+			margin: 0;
+			background: var(--paper);
+			color: var(--ink);
+			font: 16px/1.45 'Instrument Sans', system-ui, sans-serif;
+			padding-bottom: calc(84px + env(safe-area-inset-bottom))
+		}
+
+		header {
+			background: var(--forest);
+			color: var(--paper);
+			padding: calc(20px + env(safe-area-inset-top)) 20px 22px
+		}
+
+		h1,
+		h2 {
+			font-family: Fraunces, Georgia, serif;
+			font-weight: 600;
+			margin: 0
+		}
+
+		h1 {
+			font-size: 1.9rem;
+			line-height: 1.1
+		}
+
+		header p {
+			margin: 4px 0 0;
+			opacity: .8
+		}
+
+		main {
+			max-width: 640px;
+			margin: auto;
+			padding: 16px
+		}
+
+		.view {
+			display: none
+		}
+
+		.view.on {
+			display: block
+		}
+
+		button,
+		.btn {
+			font: inherit;
+			font-weight: 600;
+			border: 0;
+			border-radius: 12px;
+			padding: 12px 16px;
+			background: var(--wine);
+			color: #fff;
+			cursor: pointer;
+			display: inline-block;
+			text-align: center
+		}
+
+		button:disabled {
+			opacity: .5
+		}
+
+		.ghost {
+			background: none;
+			color: var(--bark);
+			border: 1.5px solid var(--line)
+		}
+
+		.arm {
+			background: var(--wine);
+			color: #fff;
+			border-color: var(--wine)
+		}
+
+		:focus-visible {
+			outline: 3px solid var(--wine);
+			outline-offset: 2px
+		}
+
+		.row {
+			display: flex;
+			gap: 8px;
+			flex-wrap: wrap;
+			align-items: center;
+			margin: 12px 0
+		}
+
+		.chip {
+			padding: 7px 14px;
+			border-radius: 99px;
+			background: var(--oat);
+			color: var(--bark);
+			font-weight: 600;
+			font-size: .9rem
+		}
+
+		.chip.on {
+			background: var(--bark);
+			color: var(--paper)
+		}
+
+		.grid {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 12px
+		}
+
+		.tile {
+			background: #fff;
+			border: 1px solid var(--line);
+			border-radius: 14px;
+			padding: 0;
+			overflow: hidden;
+			text-align: left;
+			color: var(--ink)
+		}
+
+		.tile img,
+		.ph {
+			width: 100%;
+			aspect-ratio: 1;
+			object-fit: cover;
+			display: block;
+			background: var(--oat)
+		}
+
+		.tile span {
+			display: block;
+			padding: 8px 10px;
+			font-size: .9rem;
+			font-weight: 600
+		}
+
+		.tile small {
+			display: block;
+			padding: 0 10px 10px;
+			color: var(--bark);
+			margin-top: -6px
+		}
+
+		.msg {
+			color: var(--bark);
+			margin: 10px 0
+		}
+
+		.empty {
+			background: var(--oat);
+			border-radius: 14px;
+			padding: 20px;
+			color: var(--bark)
+		}
+
+		input,
+		select,
+		textarea {
+			font: inherit;
+			width: 100%;
+			padding: 12px;
+			border: 1.5px solid var(--line);
+			border-radius: 12px;
+			background: #fff;
+			color: var(--ink)
+		}
+
+		label {
+			display: block;
+			font-weight: 600;
+			margin: 12px 0 4px
+		}
+
+		.card {
+			background: #fff;
+			border: 1px solid var(--line);
+			border-left: 6px solid var(--wine);
+			border-radius: 14px;
+			padding: 14px;
+			margin: 14px 0
+		}
+
+		.card h2 {
+			font-size: 1.2rem
+		}
+
+		.card p {
+			margin: 6px 0 0;
+			color: var(--bark)
+		}
+
+		.pieces {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+			gap: 8px;
+			margin-top: 10px
+		}
+
+		.pieces figure {
+			margin: 0;
+			min-width: 0;
+			overflow-wrap: anywhere;
+			font-size: .8rem;
+			text-align: center
+		}
+
+		.pieces img,
+		.pieces .ph {
+			width: 100%;
+			aspect-ratio: 1;
+			object-fit: cover;
+			display: block;
+			border-radius: 10px;
+			margin-bottom: 4px
+		}
+
+		nav {
+			position: fixed;
+			inset: auto 0 0;
+			background: var(--paper);
+			border-top: 1px solid var(--line);
+			display: flex;
+			padding-bottom: env(safe-area-inset-bottom)
+		}
+
+		nav button {
+			flex: 1;
+			background: none;
+			color: var(--bark);
+			border-radius: 0;
+			padding: 16px
+		}
+
+		nav button.on {
+			color: var(--wine);
+			box-shadow: inset 0 3px 0 var(--wine)
+		}
+
+		dialog {
+			border: 0;
+			border-radius: 18px;
+			width: min(92vw, 420px);
+			max-height: 88vh;
+			max-height: 88dvh;
+			padding: 0;
+			overflow-y: auto;
+			overscroll-behavior: contain;
+			background: var(--paper);
+			color: var(--ink)
+		}
+
+		dialog .dbody {
+			padding: 20px
+		}
+
+		.dfoot {
+			position: sticky;
+			bottom: 0;
+			display: flex;
+			gap: 8px;
+			align-items: center;
+			border-top: 1px solid var(--line);
+			padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+			background: var(--paper)
+		}
+
+		dialog::backdrop {
+			background: #0008
+		}
+
+		.pic {
+			width: 110px;
+			border-radius: 12px;
+			display: block
+		}
+
+		#q {
+			margin: 12px 0 4px
+		}
+
+		summary {
+			font-weight: 600;
+			color: var(--bark);
+			padding: 8px 0;
+			cursor: pointer
+		}
+
+		.pre.sel {
+			outline: 3px solid var(--wine);
+			outline-offset: 2px
+		}
+
+		.sw {
+			display: flex;
+			gap: 8px;
+			align-items: center;
+			flex-wrap: wrap
+		}
+
+		.sw input {
+			width: 46px;
+			height: 46px;
+			padding: 0;
+			border-radius: 50%;
+			border: 2px solid var(--line);
+			background: none
+		}
+
+		.sw input::-webkit-color-swatch-wrapper {
+			padding: 0
+		}
+
+		.sw input::-webkit-color-swatch {
+			border: 0;
+			border-radius: 50%
+		}
+
+		.sw .x {
+			padding: 8px 12px;
+			font-size: 1.2rem
+		}
+
+		.pre {
+			width: 30px;
+			height: 30px;
+			padding: 0;
+			border-radius: 50%;
+			border: 1px solid #0003
+		}
+
+		.dot {
+			display: inline-block;
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			border: 1px solid #0003;
+			margin-right: 3px;
+			vertical-align: -1px
+		}
+
+		@media(prefers-reduced-motion:no-preference) {
+			.card {
+				animation: in .25s ease-out
+			}
+
+			@keyframes in {
+				from {
+					opacity: 0;
+					transform: translateY(6px)
+				}
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<header>
+		<h1>Dressed</h1>
+		<p>What are we wearing today?</p>
+	</header>
+	<main>
+		<section id="closet" class="view on">
+			<div class="row">
+				<label class="btn" for="file">Add photos</label>
+				<input id="file" type="file" accept="image/*" multiple hidden>
+				<button class="ghost" id="manual">Add by hand</button>
+			</div>
+			<div class="msg" id="status" role="status"></div>
+			<input id="q" type="search" placeholder="Search name, color, vibe…" aria-label="Search closet"
+				autocomplete="off">
+			<div class="row" id="chips"></div>
+			<details>
+				<summary>More filters</summary>
+				<label>Color</label>
+				<div class="row" id="fcol"></div>
+				<label>Vibe</label>
+				<div class="row" id="ftag"></div>
+				<label for="fpat">Pattern</label><select id="fpat"></select>
+			</details>
+			<div class="row"><span class="msg" id="count" style="margin:0"></span><button class="ghost" id="clear"
+					style="display:none;margin-left:auto">Clear all</button></div>
+			<div class="grid" id="grid"></div>
+			<div class="row" style="margin-top:28px">
+				<button class="ghost" id="export">Back up closet</button>
+				<label class="btn ghost" for="import">Restore backup</label>
+				<input id="import" type="file" accept="application/json" hidden>
+			</div>
+		</section>
+		<section id="outfits" class="view">
+			<label for="style">Today's style</label>
+			<input id="style" placeholder="e.g. cozy coffee run, or dinner with friends" autocomplete="off">
+			<div class="row" id="quick"></div>
+			<button id="go" style="width:100%">Dress me</button>
+			<div class="msg" id="omsg" role="status"></div>
+			<div id="results"></div>
+		</section>
+	</main>
+	<nav><button class="on" data-v="closet">Closet</button><button data-v="outfits">Outfits</button></nav>
+
+	<dialog id="dlg">
+		<div class="dbody">
+			<img id="dpic" class="pic" alt="">
+			<label for="dname">Name</label><input id="dname">
+			<label for="dcat">Type</label><select id="dcat"></select>
+			<label>Colors (tap a circle to change it)</label>
+			<div class="sw" id="dsw"></div>
+			<div class="row" id="pre"></div>
+			<label for="dcolor">Color name (optional)</label><input id="dcolor" placeholder="e.g. navy and cream">
+			<label for="dpat">Pattern</label><select id="dpat"></select>
+			<label for="dtags">Vibes (comma separated)</label><input id="dtags" placeholder="casual, cozy, work">
+		</div>
+		<div class="dfoot">
+			<button id="dsave">Save</button><button class="ghost" id="dcancel">Cancel</button>
+			<button class="ghost" id="ddel" style="margin-left:auto">Delete</button>
+		</div>
+	</dialog>
+
+	<script>
+		const CONFIG = { WORKER_URL: 'https://dressed-proxy.bsma3924.workers.dev', NAME: 'Friend' };
+		const CATS = ['top', 'bottom', 'dress', 'outerwear', 'shoes', 'accessory'];
+		const QUICK = ['casual', 'dressy', 'cozy', 'work', 'night out'];
+		const PATTERNS = ['solid', 'striped', 'plaid', 'floral', 'graphic', 'other'];
+		const PRESETS = [['Black', '#1c1c1c'], ['White', '#f5f5f0'], ['Grey', '#8a8a8a'], ['Navy', '#1f2d4d'], ['Denim', '#4a6a94'], ['Beige', '#d8c3a0'], ['Brown', '#6b4a32'], ['Burgundy', '#6e2233'], ['Olive', '#5f6b3a'], ['Forest green', '#223b2f'], ['Red', '#c0392b'], ['Pink', '#e8a0b4'], ['Yellow', '#e7c04a'], ['Blue', '#2f6fb5']];
+		const $ = s => document.querySelector(s);
+		const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+		let items = [], filter = 'all', editId = null, dcolors = [], active = 0;
+		const hex = c => /^#[0-9a-f]{6}$/i.test(c);
+
+		const dbp = new Promise((res, rej) => { const r = indexedDB.open('dressed', 1); r.onupgradeneeded = () => r.result.createObjectStore('items', { keyPath: 'id' }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error) });
+		const tx = (m, f) => dbp.then(d => new Promise((res, rej) => { const t = d.transaction('items', m), q = f(t.objectStore('items')); t.oncomplete = () => res(q.result); t.onerror = t.onabort = () => rej(t.error) }));
+		const put = i => tx('readwrite', s => s.put(i)), del = id => tx('readwrite', s => s.delete(id));
+
+		async function api(path, body) {
+			const r = await fetch(CONFIG.WORKER_URL + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+			if (!r.ok) throw new Error(await r.text());
+			return r.json();
+		}
+		async function shrink(f) {
+			const b = await createImageBitmap(f), s = Math.min(1, 640 / Math.max(b.width, b.height)), c = document.createElement('canvas');
+			c.width = Math.round(b.width * s); c.height = Math.round(b.height * s);
+			c.getContext('2d').drawImage(b, 0, 0, c.width, c.height);
+			return c.toDataURL('image/jpeg', .8);
+		}
+		const pic = i => i.photo ? `<img src="${i.photo}" alt="${esc(i.name)}">` : '<div class="ph"></div>';
+		const dots = i => (i.colors || []).map(c => `<span class="dot" style="background:${c}"></span>`).join('');
+
+		let q = '', fcol = '', ftag = '', fpat = '';
+		const rgb = h => [1, 3, 5].map(k => parseInt(h.slice(k, k + 2), 16));
+		const near = h => { const a = rgb(h); return PRESETS.map(([, p]) => [p, rgb(p).reduce((t, v, k) => t + (v - a[k]) ** 2, 0)]).sort((x, y) => x[1] - y[1])[0][0] };
+		const anyFilter = () => filter !== 'all' || q || fcol || ftag || fpat;
+		function match(i) {
+			if (filter !== 'all' && i.category !== filter) return false;
+			if (fcol && !(i.colors || []).some(c => near(c) === fcol)) return false;
+			if (ftag && !i.tags.includes(ftag)) return false;
+			if (fpat && (i.pattern || 'solid') !== fpat) return false;
+			const h = [i.name, i.color, i.category, i.pattern, ...i.tags].join(' ').toLowerCase();
+			return q.toLowerCase().split(/\s+/).filter(Boolean).every(w => h.includes(w));
+		}
+		function renderCloset() {
+			const n = c => c === 'all' ? items.length : items.filter(i => i.category === c).length;
+			$('#chips').innerHTML = ['all', ...CATS].filter(c => c === 'all' || n(c)).map(c => `<button class="chip ${c === filter ? 'on' : ''}" data-f="${c}">${c} ${n(c)}</button>`).join('');
+			$('#ftag').innerHTML = [...new Set(items.flatMap(i => i.tags))].sort().map(t => `<button class="chip ${t === ftag ? 'on' : ''}" data-t="${esc(t)}">${esc(t)}</button>`).join('') || '<span class="msg">Vibes appear once items have them.</span>';
+			$('#fcol').innerHTML = PRESETS.filter(([, h]) => items.some(i => (i.colors || []).some(c => near(c) === h))).map(([nm, h]) => `<button class="pre ${h === fcol ? 'sel' : ''}" data-c="${h}" style="background:${h}" aria-label="${nm}" aria-pressed="${h === fcol}"></button>`).join('') || '<span class="msg">Colors appear once items have them.</span>';
+			$('#fpat').innerHTML = '<option value="">Any pattern</option>' + PATTERNS.filter(p => items.some(i => (i.pattern || 'solid') === p)).map(p => `<option ${p === fpat ? 'selected' : ''}>${p}</option>`).join('');
+			const list = items.filter(match), any = anyFilter();
+			$('#count').textContent = any ? `Showing ${list.length} of ${items.length}` : '';
+			$('#clear').style.display = any ? '' : 'none';
+			$('#grid').innerHTML = list.length ? list.map(i => `<button class="tile" data-id="${i.id}">${pic(i)}<span>${esc(i.name)}</span><small>${dots(i)}${esc(i.color)}${i.pattern && i.pattern !== 'solid' ? ', ' + esc(i.pattern) : ''}</small></button>`).join('')
+				: items.length ? '<div class="empty" style="grid-column:1/-1">Nothing matches. <button class="ghost" data-clear>Clear search</button></div>'
+					: `<div class="empty" style="grid-column:1/-1">Tap "Add photos" and pick a few pieces from your camera roll. The app fills in the details and you can fix anything by tapping an item.</div>`;
+		}
+		const clearAll = () => { filter = 'all'; q = fcol = ftag = fpat = ''; $('#q').value = ''; renderCloset() };
+		$('#chips').onclick = e => { const f = e.target.dataset.f; if (f) { filter = f; renderCloset() } };
+		$('#ftag').onclick = e => { const t = e.target.dataset.t; if (t !== undefined) { ftag = ftag === t ? '' : t; renderCloset() } };
+		$('#fcol').onclick = e => { const c = e.target.closest('.pre'); if (c) { fcol = fcol === c.dataset.c ? '' : c.dataset.c; renderCloset() } };
+		$('#fpat').onchange = e => { fpat = e.target.value; renderCloset() };
+		$('#q').oninput = e => { q = e.target.value.trim(); renderCloset() };
+		$('#clear').onclick = clearAll;
+		$('#grid').addEventListener('click', e => { if (e.target.hasAttribute('data-clear')) clearAll() });
+		$('#grid').onclick = e => { const t = e.target.closest('.tile'); if (t) openEdit(t.dataset.id) };
+
+		$('#file').onchange = async e => {
+			const files = [...e.target.files]; e.target.value = ''; let n = 0, fail = 0;
+			for (const f of files) {
+				$('#status').textContent = `Adding ${++n} of ${files.length}…`;
+				try {
+					const photo = await shrink(f); let m = {};
+					try { m = await api('/tag', { image: photo.split(',')[1] }) } catch { fail++ }
+					const it = { id: crypto.randomUUID(), name: m.name || 'New item', category: CATS.includes(m.category) ? m.category : 'top', color: m.color || '', colors: (Array.isArray(m.colors) ? m.colors : []).filter(hex).slice(0, 3), pattern: PATTERNS.includes(m.pattern) ? m.pattern : 'solid', tags: Array.isArray(m.tags) ? m.tags : [], photo };
+					await put(it); items.push(it); renderCloset();
+				} catch { fail++ }
+			}
+			$('#status').textContent = fail ? `${fail} item(s) need details. Tap them to fill in the name and type.` : '';
+		};
+
+		function renderSw() {
+			$('#dsw').innerHTML = dcolors.map((c, k) => `<input type="color" value="${c}" data-k="${k}" aria-label="Color ${k + 1}">`).join('')
+				+ (dcolors.length > 1 ? '<button class="ghost x" data-rm aria-label="Remove last color">×</button>' : '')
+				+ (dcolors.length < 3 ? '<button class="ghost" data-add>+ Add color</button>' : '');
+			$('#pre').innerHTML = PRESETS.map(([n, h]) => `<button class="pre" data-n="${n}" data-h="${h}" style="background:${h}" aria-label="${n}"></button>`).join('');
+		}
+		$('#dsw').oninput = e => { const k = e.target.dataset.k; if (k !== undefined) dcolors[k] = e.target.value };
+		$('#dsw').onfocusin = e => { if (e.target.dataset.k !== undefined) active = +e.target.dataset.k };
+		$('#dsw').onclick = e => {
+			if (e.target.hasAttribute('data-add')) { dcolors.push('#808080'); active = dcolors.length - 1; renderSw() }
+			if (e.target.hasAttribute('data-rm')) { dcolors.pop(); active = 0; renderSw() }
+		};
+		$('#pre').onclick = e => {
+			const b = e.target.closest('.pre'); if (!b) return;
+			if (dcolors.length) dcolors[active] = b.dataset.h; else dcolors = [b.dataset.h];
+			if (dcolors.length === 1 && !$('#dcolor').value.trim()) $('#dcolor').value = b.dataset.n.toLowerCase();
+			renderSw();
+		};
+		function openEdit(id) {
+			editId = id; const i = items.find(x => x.id === id) || { name: '', category: 'top', color: '', tags: [] };
+			$('#dpic').style.display = i.photo ? 'block' : 'none'; $('#dpic').src = i.photo || '';
+			$('#dcat').innerHTML = CATS.map(c => `<option ${c === i.category ? 'selected' : ''}>${c}</option>`).join('');
+			dcolors = [...(i.colors || [])]; active = 0;
+			$('#dname').value = i.name; $('#dcolor').value = i.color; $('#dtags').value = i.tags.join(', ');
+			$('#dpat').innerHTML = PATTERNS.map(p => `<option ${p === (i.pattern || 'solid') ? 'selected' : ''}>${p}</option>`).join('');
+			renderSw();
+			disarm(); $('#ddel').style.display = id ? '' : 'none'; $('#dlg').showModal();
+		}
+		$('#manual').onclick = () => openEdit(null);
+		$('#dcancel').onclick = () => $('#dlg').close();
+		$('#dsave').onclick = async () => {
+			const name = $('#dname').value.trim(); if (!name) { $('#dname').focus(); return }
+			let it = items.find(x => x.id === editId);
+			if (!it) { it = { id: crypto.randomUUID() }; items.push(it) }
+			Object.assign(it, { name, category: $('#dcat').value, color: $('#dcolor').value.trim(), colors: dcolors.filter(hex), pattern: $('#dpat').value, tags: $('#dtags').value.split(',').map(t => t.trim().toLowerCase()).filter(Boolean) });
+			await put(it); $('#dlg').close(); renderCloset();
+		};
+		let armed = 0;
+		function disarm() { armed = 0; $('#ddel').textContent = 'Delete'; $('#ddel').classList.remove('arm') }
+		$('#ddel').onclick = async () => {
+			const b = $('#ddel');
+			if (!armed) { armed = 1; b.textContent = 'Tap again to delete'; b.classList.add('arm'); setTimeout(disarm, 3000); return }
+			try { await del(editId); items = items.filter(x => x.id !== editId); $('#dlg').close(); renderCloset() }
+			catch { b.textContent = 'Could not delete, try again' }
+		};
+
+		$('#export').onclick = () => {
+			const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(items)], { type: 'application/json' }));
+			a.download = 'closet-backup.json'; a.click();
+		};
+		$('#import').onchange = async e => {
+			try {
+				const data = JSON.parse(await e.target.files[0].text());
+				for (const i of data) if (i.id && i.name) { i.colors = (Array.isArray(i.colors) ? i.colors : []).filter(hex); i.tags = Array.isArray(i.tags) ? i.tags : []; await put(i); items = items.filter(x => x.id !== i.id); items.push(i) }
+				renderCloset(); $('#status').textContent = 'Closet restored.';
+			} catch { $('#status').textContent = 'That file could not be read.' }
+			e.target.value = '';
+		};
+
+		$('#quick').innerHTML = QUICK.map(q => `<button class="chip" data-q="${q}">${q}</button>`).join('');
+		$('#quick').onclick = e => { if (e.target.dataset.q) $('#style').value = e.target.dataset.q };
+
+		function score(i, words) { const h = (i.tags.join(' ') + ' ' + i.name + ' ' + i.color).toLowerCase(); return words.filter(w => h.includes(w)).length }
+		function localOutfits(style) {
+			const words = style.toLowerCase().split(/\W+/).filter(w => w.length > 2);
+			const pick = (c, solid) => items.filter(i => i.category === c && (!solid || (i.pattern || 'solid') === 'solid')).map(i => [i, score(i, words) + Math.random() * 1.5]).sort((a, b) => b[1] - a[1])[0]?.[0];
+			return [1, 2, 3].map(n => {
+				const dress = pick('dress'), top = pick('top'), bot = (top && (top.pattern || 'solid') !== 'solid' && pick('bottom', 1)) || pick('bottom'), ids = (dress && Math.random() < .35 ? [dress] : [top, bot]).concat([pick('shoes'), Math.random() < .5 ? pick('outerwear') : null]).filter(Boolean).map(i => i.id);
+				return { title: `Option ${n}`, ids: [...new Set(ids)], note: '' };
+			}).filter(o => o.ids.length > 1);
+		}
+		async function dress() {
+			const style = $('#style').value.trim(), btn = $('#go');
+			if (items.length < 3) { $('#omsg').textContent = 'Add at least a few pieces to your closet first.'; return }
+			btn.disabled = true; $('#omsg').textContent = 'Styling…'; let outs;
+			try {
+				const d = await api('/outfits', { style, items: items.map(({ id, name, category, color, colors, pattern, tags }) => ({ id, name, category, color, colors, pattern, tags })) });
+				outs = d.outfits.map(o => ({ ...o, ids: (o.ids || []).filter(id => items.some(i => i.id === id)) })).filter(o => o.ids.length > 1);
+				if (!outs.length) throw 0; $('#omsg').textContent = '';
+			} catch { outs = localOutfits(style); $('#omsg').textContent = outs.length ? 'The stylist is resting, so these are quick picks from your closet.' : 'Not enough pieces to build an outfit yet.' }
+			$('#results').innerHTML = outs.map(o => `<div class="card"><h2>${esc(o.title)}</h2>${o.note ? `<p>${esc(o.note)}</p>` : ''}<div class="pieces">${o.ids.map(id => { const i = items.find(x => x.id === id); return `<figure>${pic(i)}${esc(i.name)}</figure>` }).join('')}</div></div>`).join('');
+			btn.disabled = false;
+		}
+		$('#go').onclick = dress;
+		$('#style').onkeydown = e => { if (e.key === 'Enter') dress() };
+
+		document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
+			document.querySelectorAll('nav button,.view').forEach(x => x.classList.remove('on'));
+			b.classList.add('on'); $('#' + b.dataset.v).classList.add('on');
+		});
+		tx('readonly', s => s.getAll()).then(r => { items = r.map(i => ({ colors: [], pattern: 'solid', ...i })); renderCloset() });
+	</script>
+</body>
+
+</html>
